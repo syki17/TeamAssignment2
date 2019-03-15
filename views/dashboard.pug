@@ -1,0 +1,27 @@
+extends layout
+
+block content
+  h1= title
+  p Welcome to #{title}
+
+  .container
+    header tickets
+    table
+      tbody
+
+    button show closed tickets?
+
+  .container
+    header Open New Ticket
+    form(action="/dashboard" id="new-ticket-form" method="post" role="form")
+            .form-group
+                label(for="description") Incident Description
+                input.form-control(name="description" type="text" rows="5" required="required")
+            .form-group
+                label(for="priority") Incident Priority
+                input.form-control(name="priority" type="number" required="required")
+            .form-group
+                label(for="incidentNarrative") Incident Narrative
+                textarea.form-control(name="narrative" rows="5" required="required")
+
+            button.btn.border(type="submit") Submit
