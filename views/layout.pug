@@ -2,6 +2,16 @@ doctype html
 html
   head
     title= title
-    link(rel='stylesheet', href='/stylesheets/style.css')
+    script(src="javascripts/toggle.js")
+    link(rel='stylesheet', type='text/css', href='stylesheets/bootstrap.css')
   body
+    nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
+      .container
+        a.navbar-brand.text-white Ticket Management System
+        div.collapse.navbar-collapse
+          ul.navbar-nav
+            li.nav-item
+              a.nav-link(href='/') Home
+            li.nav-item
+              a.nav-link(href='/dashboard') Ticket Dashboard
     block content
