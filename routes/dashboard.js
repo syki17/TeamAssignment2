@@ -16,12 +16,20 @@ router.get('/tickets', function(req, res, next)
         {
           description: 'sample ticket from json 1', 
           priority: 1, 
-          narrative: 'test ticket, please ignore'
+          narrative: 'test ticket, please ignore', 
+          open: true
         }, 
         {
           description: 'sample ticket from json 2',
           priority: 1, 
-          narrative: 'second testing ticket'
+          narrative: 'second testing ticket', 
+          open: true
+        }, 
+        {
+          description: 'sample closed ticket',
+          priority: 2,
+          narrative: 'sample ticket made for testing the hide/show closed tickets functionality',
+          open: false
         }
       ]
     })

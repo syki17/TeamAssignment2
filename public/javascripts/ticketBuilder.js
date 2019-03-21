@@ -1,5 +1,7 @@
 //grabs the tickets elemenet
 var ticketsEle = document.getElementsByClassName("tickets")
+var toggleClosedButton = document.getElementsByClassName('toggleClosedButton')
+
 
 //get data from the server
 const requestURL = 'dashboard/tickets'
@@ -46,6 +48,13 @@ function dataRecieved(tickets)
         var narrativeText = document.createElement('p')
         narrativeText.appendChild(document.createTextNode(ticket.narrative))
         container.append(narrativeText)
+
+        // check if the ticket is open, and put the 'closedTicket' class on those that are not, and set them to invisible
+        if(!ticket.open)
+        {
+            li.classList.add('closedTicket')
+            li.style.display = 'none'
+        }
     }
 }
 
@@ -74,3 +83,26 @@ function toggle(event) {
         ele.style.display = "none";
     }
   } 
+
+  function toggleClosed(event)
+  {
+    // cycle through all the child elements of ticketsEle with a foreach loop
+    for(let ticketEle of ticketsEle.item(0).children)
+    {
+        // check if each ele has the 'closedTicket' class
+        if(ticketEle.classList.contains('closedTicket'))
+        {
+            // change the display from 'none' to 'block', or vice-versa, and change the text of the button to reflect that
+            if(ticketEle.style.display === 'none')
+            {
+                ticketEle.style.display = 'block'
+                toggleClosedButton.item(0).textContent = 'hide closed tickets'
+            }
+            else
+            {
+                ticketEle.style.display = 'none'
+                toggleClosedButton.item(0).textContent = 'show closed tickets'
+            }
+        }          
+    }
+  }
