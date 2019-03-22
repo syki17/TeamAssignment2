@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var Ticket = require('../models/ticket');
 
 var tickets
 tickets = {tickets: 
@@ -34,7 +35,14 @@ router.get('/', function(req, res, next) {
 // returns mock json to test the ticket builder on client
 router.get('/tickets', function(req, res, next)
 {
-  res.json(tickets)
+  //res.json(tickets)
+  //res.json(tickets)
+
+    Ticket.find(function(err,tickets){
+        res.json(tickets);
+        console.log(tickets);
+    });
+   // res.json(Ticket)
 });
 
 // TODO
@@ -51,8 +59,17 @@ router.post('/editTicket', function(req, res, next)
 // create a new ticket
 router.post('/addTicket', function(req, res, next)
 {
-  console.log(req.body)
+    const newTicket = new Ticket(req.body);
+    newTicket.save().then(item =>{
+        console.log('saved');
+    })
+        .catch(err =>{
+    console.log('err');
+});
+  console.log(req.body);
+  console.log((+ new Date()/1000).toFixed(0));//rounds the timestamp so we don't get decimals
   res.redirect('/dashboard')
+    console.log(newTicket);
 })
 
 module.exports = router;

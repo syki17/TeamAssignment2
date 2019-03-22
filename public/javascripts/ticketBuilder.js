@@ -1,12 +1,12 @@
 
 
 //grabs the tickets elemenet
-var ticketsEle = document.getElementsByClassName("tickets")
-var toggleClosedButton = document.getElementsByClassName('toggleClosedButton')
+var ticketsEle = document.getElementsByClassName("tickets");
+var toggleClosedButton = document.getElementsByClassName('toggleClosedButton');
 
 
 //get data from the server
-const requestURL = 'dashboard/tickets'
+const requestURL = 'dashboard/tickets';
 fetch(requestURL)
 .then(function(response)
 {
@@ -16,7 +16,7 @@ fetch(requestURL)
 function dataRecieved(tickets)
 {
     //loop through the json and build the tickets
-    for (let ticket of tickets.tickets)
+    for (let ticket of tickets)
     {
         //create the li element (the entire ticket will be encased in this)
         var li = document.createElement('li')

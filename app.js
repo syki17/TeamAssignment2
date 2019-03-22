@@ -3,11 +3,25 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-
+var mongoose = require ('mongoose');
 var indexRouter = require('./routes/index');
 var dashboardRouter = require('./routes/dashboard');
 
 var app = express();
+
+//DB connection
+mongoose.connect(
+    'mongodb+srv://jakub:jakub@cluster0-anjsc.mongodb.net/test?retryWrites=true',
+    {
+      useNewUrlParser: true
+    }
+);
+var con = mongoose.connection;
+
+con.once('open', () =>{
+  console.log('Connected');
+});
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
