@@ -41,7 +41,7 @@ router.get('/tickets', function(req, res, next)
 // POST 
 // alter a ticket
 router.post('/editTicket', function(req, res, next)
-{
+{ 
   console.log(req.body)
   res.redirect('/dashboard')
 })
