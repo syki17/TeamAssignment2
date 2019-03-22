@@ -1,3 +1,5 @@
+
+
 //grabs the tickets elemenet
 var ticketsEle = document.getElementsByClassName("tickets")
 var toggleClosedButton = document.getElementsByClassName('toggleClosedButton')
@@ -18,21 +20,37 @@ function dataRecieved(tickets)
     {
         //create the li element (the entire ticket will be encased in this)
         var li = document.createElement('li')
-        li.appendChild(document.createTextNode(ticket.description))
-        li.classList.add('list-group-item', 'list-group-item-action')
-        li.onclick = toggle
+        li.classList.add('ticket', 'list-group-item', 'list-group-item-action')
+        li.onclick = toggleDetails
         ticketsEle.item(0).append(li)
+
+        var descriptionEle = document.createElement('p')
+        descriptionEle.classList.add('description')
+        descriptionEle.appendChild(document.createTextNode(ticket.description))
+        li.append(descriptionEle)
 
         //create the div element (the part that contains the details, and is hidden by default)
         var div = document.createElement('div')
         div.classList.add('ticketDetails')
-        div.style.display = 'none'
+            div.style.display = 'none'
         li.append(div)
         
-        //create the p element for priority
+        //create the div element for the priority row
+        var priorityRow = document.createElement('div')
+        priorityRow.classList.add('priorityRow', 'row')
+        div.append(priorityRow)
+
+        //create the p element for the priority
         var priority = document.createElement('p')
-        priority.appendChild(document.createTextNode('Priority: ' + ticket.priority))
+        priority.classList.add('priority', 'col-md-auto')
+        priority.appendChild(document.createTextNode('priority:'))
         div.append(priority)
+
+        //create the p element for priority field
+        var priorityField = document.createElement('p')
+        priorityField.classList.add('priorityField', 'col-md-auto')
+        priorityField.appendChild(document.createTextNode(ticket.priority))
+        div.append(priorityField)
 
         //create the p element for narrative
         var narrative = document.createElement('p')
@@ -55,13 +73,27 @@ function dataRecieved(tickets)
             li.classList.add('closedTicket')
             li.style.display = 'none'
         }
+
+        // create an edit button
+        var editButton = document.createElement('button')
+        editButton.classList.add('editButton')
+        editButton.onclick = editButtonPressed
+        editButton.appendChild(document.createTextNode('edit'))
+        div.append(editButton)
     }
 }
 
 // a function for toggling the visibility of the selected ticket's details
-// accepts a page element, navigates to the element with the class 'ticket details, and makes it visible if invisible, and vice-versa
-function toggle(event) {
+// accepts an event, navigates to the element with the class 'ticket details, and makes it visible if invisible, and vice-versa
+function toggle(event) 
+{
     var ele = event.target
+    console.log(ele)
+    // end the function if the selected element is the edit button
+    if(ele.classList.contains('editButton'))
+    {
+        return null
+    }
     // if ele has any child elements, set it to the first child element
     if(ele.children[0] != null)
     {
@@ -82,9 +114,33 @@ function toggle(event) {
     {
         ele.style.display = "none";
     }
-  } 
+} 
 
-  function toggleClosed(event)
+// a function that toggles the visability of the ticket details
+function toggleDetails(event)
+{
+    // do nothing if the selected element is the button (because we want to be able to press that without collapsing the ticket details)
+    if(event.target.classList.contains('editButton'))
+    {
+        return null 
+    }
+    // grab the li element that holds the entire ticket
+    var details = event.target.closest('li')
+    // grab the div element that represents the details 
+    details=details.children[1]
+    // set visible to invisible, and vice-versa
+    if(details.style.display === 'block')
+    {
+        details.style.display='none'
+    }
+    else
+    {
+        details.style.display='block'
+    }
+}
+
+  // a function for toggling the visability of all closed tickets
+  function toggleClosed()
   {
     // cycle through all the child elements of ticketsEle with a foreach loop
     for(let ticketEle of ticketsEle.item(0).children)
@@ -105,4 +161,63 @@ function toggle(event) {
             }
         }          
     }
+  }
+
+  // a function that allows the given element to be edited, then prompts the user to confirm changes before calling the 'dashboard/editTicket' POST method
+  function editButtonPressed(event)
+  {
+    // get the li element for the selected ticket (the element storing the entire ticket, who's text content is the description)
+    var ticket = event.target.closest('li')
+
+    // checks that the ticket isn't closed
+    if(ticket.classList.contains('closedTicket'))
+    {
+        return null
+    }
+    
+    // get the editable elements
+    var description = ticket.children[0]
+    var priorityField = ticket.children[1].children[2]
+    var narrativeText = ticket.children[1].children[3].children[0].children[0]
+
+    // make the fields editable, one at a time, and focus on the one that is currently editable
+    description.setAttribute('contenteditable', true)
+    description.focus()
+    description.style.background = 'lightgrey'
+    description.addEventListener('blur', function(event)
+    {
+        description.setAttribute('contenteditable', false)
+        description.style.background = 'none'
+        priorityField.setAttribute('contenteditable', true)
+        priorityField.focus()
+        priorityField.style.background = 'lightgrey'
+    })
+    priorityField.addEventListener('blur', function(event)
+    {
+        priorityField.setAttribute('contenteditable', false)
+        priorityField.style.background='none'
+        narrativeText.setAttribute('contentEditable', true)
+        narrativeText.focus()
+        narrativeText.style.background='lightgrey'
+    })
+    narrativeText.addEventListener('blur', function(event)
+    {
+        narrativeText.setAttribute('contenteditable', false)
+        narrativeText.style.background='none'
+        //prompt the user to cconfirm changes, and push the changes to the server side if confirmed
+        if(confirm('do you want to save these changes?'))
+        {
+            //makes a POST request to dashboard/editTicket that sends a json of the edited entry
+            var postRequest = new XMLHttpRequest()
+            postRequest.open('POST', '/dashboard/editTicket', true)
+            postRequest.send(
+                {
+                    description: description,
+                    priority: priorityField,
+                    narrative: narrativeText
+                }
+            )
+            location.reload()
+        }
+    })
   }
