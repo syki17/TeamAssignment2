@@ -1,6 +1,5 @@
-
-
 //grabs the tickets elemenet
+
 var ticketsEle = document.getElementsByClassName("tickets");
 var toggleClosedButton = document.getElementsByClassName('toggleClosedButton');
 
@@ -34,6 +33,9 @@ function dataRecieved(tickets)
         div.classList.add('ticketDetails')
             div.style.display = 'none'
         li.append(div)
+
+
+
         
         //create the div element for the priority row
         var priorityRow = document.createElement('div')
@@ -56,6 +58,18 @@ function dataRecieved(tickets)
         var narrative = document.createElement('p')
         narrative.appendChild(document.createTextNode('narrative: '))
         div.append(narrative)
+
+        //creates a hidden value for id, so we can use it for editing
+        var id = document.createElement('input')
+        id.setAttribute('type', 'hidden');
+        id.setAttribute('value',ticket._id);
+        div.append(id);
+
+        // create checkbox to manipulate ticket status
+        var status = document.createElement('input')
+        status.setAttribute('type','checkbox')
+        status.checked = ticket.open;   
+        div.append(status)
 
         //create the div.container for the narrative text
         var container = document.createElement('div')
@@ -178,7 +192,9 @@ function toggleDetails(event)
     // get the editable elements
     var description = ticket.children[0]
     var priorityField = ticket.children[1].children[2]
-    var narrativeText = ticket.children[1].children[3].children[0].children[0]
+    var narrativeText = ticket.children[1].children[3].children[0].children[0];
+    var ticketId = ticket.children[1].children[4].getAttribute('value');// get id from hidden input field
+
 
     // make the fields editable, one at a time, and focus on the one that is currently editable
     description.setAttribute('contenteditable', true)
@@ -209,15 +225,20 @@ function toggleDetails(event)
         {
             //makes a POST request to dashboard/editTicket that sends a json of the edited entry
             var postRequest = new XMLHttpRequest()
-            postRequest.open('POST', '/dashboard/editTicket', true)
-            postRequest.send(
-                {
-                    description: description,
-                    priority: priorityField,
-                    narrative: narrativeText
-                }
-            )
-            location.reload()
+            var data = {
+                    _id: ticketId,
+                    description: description.innerHTML,
+                    priority: priorityField.innerHTML,
+                    narrative: narrativeText.innerHTML
+            }
+            console.log(data._id);
+            var json = JSON.stringify(data);
+            postRequest.open('POST', '/dashboard/editTicket')
+            postRequest.setRequestHeader("Content-Type", "application/json;charset=UTF-8");           // console.log(ticketId.getAttribute('value'));
+            postRequest.send(json)
+
+          //  location.reload()
+
         }
     })
   }

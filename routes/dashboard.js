@@ -1,31 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var Ticket = require('../models/ticket');
-
-var tickets
-tickets = {tickets: 
-  [
-    {
-      description: 'sample ticket from json 1', 
-      priority: 1, 
-      narrative: 'test ticket, please ignore', 
-      open: true
-    }, 
-    {
-      description: 'sample ticket from json 2',
-      priority: 1, 
-      narrative: 'second testing ticket', 
-      open: true
-    }, 
-    {
-      description: 'sample closed ticket',
-      priority: 2,
-      narrative: 'sample ticket made for testing the hide/show closed tickets functionality',
-      open: false
-    }
-  ]
-}
-
+var ObjectID = require('mongodb').ObjectID;
 /* GET dashboard. */
 router.get('/', function(req, res, next) {
   res.render('dashboard', { title: 'Dashboard' });
@@ -35,13 +11,15 @@ router.get('/', function(req, res, next) {
 // returns mock json to test the ticket builder on client
 router.get('/tickets', function(req, res, next)
 {
-  //res.json(tickets)
-  //res.json(tickets)
-
     Ticket.find(function(err,tickets){
         res.json(tickets);
-        console.log(tickets);
+       // console.log(tickets)
+        tickets.forEach(function (item) {
+            var x = item._id
+         //   console.log(x)
+                });
     });
+
    // res.json(Ticket)
 });
 
@@ -49,27 +27,46 @@ router.get('/tickets', function(req, res, next)
 // POST 
 // alter a ticket
 router.post('/editTicket', function(req, res, next)
-{ 
-  console.log(req.body)
+{
+    //find ticket by Id - if found update
+    Ticket.findById(req.body._id, function(err,ticket){
+        if(ticket){
+            ticket.description = req.body.description
+            ticket.priority =Number(req.body.priority)
+            ticket.narrative = req.body.narrative
+            //add checkbox for open tickets
+            ticket.timestamp = (+ new Date()/1000).toFixed(0)
+            ticket.save();
+        }
+        else{
+            console.log(err)
+        }
+    });
+
   res.redirect('/dashboard')
-})
+});
 
 // TODO
 // POST
 // create a new ticket
 router.post('/addTicket', function(req, res, next)
 {
-    const newTicket = new Ticket(req.body);
-    newTicket.save().then(item =>{
+    const newTicket = new Ticket({
+        'description': req.body.description,
+        'priority': Number(req.body.priority),
+        'narrative': req.body.narrative,
+        'open': true,
+        'timestamp': (+ new Date()/1000).toFixed(0)//unix time in seconds
+    });
+
+    newTicket.save().then(() =>{
         console.log('saved');
     })
-        .catch(err =>{
+        .catch(() =>{
     console.log('err');
 });
-  console.log(req.body);
-  console.log((+ new Date()/1000).toFixed(0));//rounds the timestamp so we don't get decimals
+
   res.redirect('/dashboard')
-    console.log(newTicket);
-})
+});
 
 module.exports = router;
