@@ -10,13 +10,14 @@ function isAuthenticated(req,res,next){
     res.redirect('/login');
 }
 
-
+router.use(isAuthenticated)
 
 /* GET dashboard. */
 router.get('/', function(req, res, next) {
   res.render('dashboard', {
       title: 'Dashboard'});
 });
+
 
 /**
  * Return all the tickets from the database.
@@ -28,7 +29,6 @@ router.get('/tickets', function(req, res, next)
     });
 });
 
-router.use(isAuthenticated)
 
 /**
  * Edits the ticket in the database. Updates the timestamp with the time of edit.

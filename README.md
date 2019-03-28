@@ -1,4 +1,4 @@
-(logo)
+![Alt text](public/images/logo.png?raw=true "Logo")
 
 # IncidentMangementWebAppDoccumentation
 By Nicholas Gardner and Jakub 
