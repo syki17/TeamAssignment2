@@ -7,16 +7,6 @@ block content
   .container
     header tickets
     ul.list-group.tickets
-      //- sample ticket
-      //- li.list-group-item.list-group-item-action
-      //-   p(onClick="toggle(this)") sample ticket
-      //-   div(style={display: "none"})
-      //-     div.row
-      //-       p.col-md-auto Priority:
-      //-       p.col-md-auto 1
-      //-     p Narrative: 
-      //-       .container 
-      //-         p sample text
     button.toggleClosedButton(onclick='toggleClosed()') show closed tickets?
 
   .container
@@ -25,6 +15,9 @@ block content
             .form-group
                 label(for="description") Incident Description
                 input.form-control(id="descriptionField" name="description" type="text" rows="5" required="required")
+            .form-group
+                label(for="cxName") Customer Name
+                input.form-control(id="cxNameField" name="cxName" type="text" required="required")
             .form-group
                 label(for="priority") Incident Priority
                 input.form-control(id="priorityField" name="priority" type="number" required="required")

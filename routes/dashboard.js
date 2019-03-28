@@ -6,20 +6,44 @@ tickets = {tickets:
   [
     {
       description: 'sample ticket from json 1', 
+      recordNumber: 1,
       priority: 1, 
-      narrative: 'test ticket, please ignore', 
+      narrative: 
+      [
+        'test ticket, please ignore', 
+        'second narrative', 
+        'third narrative'
+      ],
+      cxName: 'Bob',
+      status: 'Open',
       open: true
     }, 
     {
       description: 'sample ticket from json 2',
+      recordNumber: 2,
       priority: 1, 
-      narrative: 'second testing ticket', 
+      narrative: 
+      [
+        'test ticket, please ignore', 
+        'second narrative', 
+        'third narrative'
+      ],
+      cxName: 'Fred',
+      status: 'Open',
       open: true
     }, 
     {
       description: 'sample closed ticket',
+      recordNumber: 3,
       priority: 2,
-      narrative: 'sample ticket made for testing the hide/show closed tickets functionality',
+      narrative: 
+      [
+        'test ticket, please ignore', 
+        'second narrative', 
+        'third narrative'
+      ],
+      cxName: 'Joe',
+      status: 'Closed',
       open: false
     }
   ]
