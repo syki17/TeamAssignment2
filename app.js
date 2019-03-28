@@ -6,8 +6,15 @@ var logger = require('morgan');
 var mongoose = require ('mongoose');
 var indexRouter = require('./routes/index');
 var dashboardRouter = require('./routes/dashboard');
+var LocalStrategy = require('passport-local').Strategy;
+var Account = require('./models/account');
+var passport = require('passport');
+var session = require('express-session');
+
 
 var app = express();
+
+
 
 //DB connection
 mongoose.connect(
@@ -32,6 +39,23 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(session({
+    secret: '1bea23f58d718fd871c16e6594a4996c',
+    resave: false,
+    saveUninitialized: true,
+    cookie: {secure: false}
+}))
+
+//app.use((req,res,next)=>{
+//    res.locals.loggedIn = req.isAuthenticated();
+//})
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.use(new LocalStrategy(Account.authenticate()));
+passport.serializeUser(Account.serializeUser());
+passport.deserializeUser(Account.deserializeUser());
 
 app.use('/', indexRouter);
 app.use('/dashboard', dashboardRouter);

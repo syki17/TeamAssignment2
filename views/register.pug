@@ -1,0 +1,29 @@
+extends layout
+
+block content
+    h1= title
+    .container
+        h1 Registration
+        form(method="post")
+            .form-group
+                label(for='Username') Username
+                input#Username.form-control(type='username', placeholder='Enter Username',name='username', required)
+            .form-group
+                label(for='Email') Email address
+                input#Email.form-control(type='email',name='email' aria-describedby='emailHelp', placeholder='Enter email')
+                small#emailHelp.form-text.text-muted We'll never share your email with anyone else.
+            .form-group
+                label(for='Password') Password
+                input#Password.form-control(type='password',name='password', placeholder='Password')
+            .form-group
+                label(for='selectRole') Example select
+                select#selectRole.form-control(name='role')
+                    option Admin
+                    option Employee
+
+
+            button.btn.btn-primary(type='submit') Submit
+
+
+
+

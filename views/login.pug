@@ -1,0 +1,16 @@
+extends layout
+
+block content
+    h1= title
+    .container
+        h1 Login
+        form(method="post")
+            .form-group
+                label(for='Username') Username
+                input#Username.form-control(type='username', placeholder='Enter Username',name='username', required)
+            .form-group
+                label(for='Password') Password
+                input#Password.form-control(type='password',name='password', placeholder='Password')
+
+
+            button.btn.btn-primary(type='submit') Log in

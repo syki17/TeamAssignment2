@@ -1,31 +1,38 @@
 var express = require('express');
 var router = express.Router();
 var Ticket = require('../models/ticket');
-var ObjectID = require('mongodb').ObjectID;
+
+function isAuthenticated(req,res,next){
+    if(req.isAuthenticated()){
+        return next();
+    }
+    console.log('Not Authenticated')
+    res.redirect('/login');
+}
+
+
+
 /* GET dashboard. */
 router.get('/', function(req, res, next) {
-  res.render('dashboard', { title: 'Dashboard' });
+  res.render('dashboard', {
+      title: 'Dashboard'});
 });
 
-// GET tickets
-// returns mock json to test the ticket builder on client
+/**
+ * Return all the tickets from the database.
+ */
 router.get('/tickets', function(req, res, next)
 {
     Ticket.find(function(err,tickets){
         res.json(tickets);
-       // console.log(tickets)
-        tickets.forEach(function (item) {
-            var x = item._id
-         //   console.log(x)
-                });
     });
-
-   // res.json(Ticket)
 });
 
-// TODO
-// POST 
-// alter a ticket
+router.use(isAuthenticated)
+
+/**
+ * Edits the ticket in the database. Updates the timestamp with the time of edit.
+ */
 router.post('/editTicket', function(req, res, next)
 {
     //find ticket by Id - if found update
@@ -62,8 +69,8 @@ router.post('/addTicket', function(req, res, next)
     newTicket.save().then(() =>{
         console.log('saved');
     })
-        .catch(() =>{
-    console.log('err');
+        .catch(err =>{
+    console.log(err);
 });
 
   res.redirect('/dashboard')
