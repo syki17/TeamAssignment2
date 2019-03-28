@@ -37,12 +37,14 @@ function dataRecieved(tickets)
          *              p #{ticket.cxName}
          *          ul.narratives.list-group narrative:
          *              li.list-group-item #{ticket.narrative}
+         *          button edit
          *          div.form-group display=none
          *              label Enter New Narrative:
          *              textarea.form-control rows=5
          *          div.form-group display=none
          *              label ticket resolution:
          *              textarea.form-control rows=5
+         *          button save changes
          *          
          */         
 
@@ -79,22 +81,26 @@ function dataRecieved(tickets)
 
         //create the select element for the status
         var statusSelect = document.createElement('select')
-        statusSelect.classList.add('statusSelect')
+        statusSelect.classList.add('statusSelect', 'noCollapse')
         statusSelect.style.display='none'
         statusEle.append(statusSelect)
         
         //create the option elements for the select
         var newOption = document.createElement('option')
         newOption.appendChild(document.createTextNode('Open'))
+        newOption.classList.add('noCollapse')
         statusSelect.append(newOption)
         var progressOption = document.createElement('option')
         progressOption.appendChild(document.createTextNode('In Progress'))
+        progressOption.classList.add('noCollapse')
         statusSelect.append(progressOption)
         var dispatchedOption = document.createElement('option')
         dispatchedOption.appendChild(document.createTextNode('Dispatched'))
+        dispatchedOption.classList.add('noCollapse')
         statusSelect.append(dispatchedOption)
         var closedOption = document.createElement('option')
         closedOption.appendChild(document.createTextNode('Closed'))
+        closedOption.classList.add('noCollapse')
         statusSelect.append(closedOption)
 
         //create the div element (the part that contains the details, and is hidden by default)
@@ -151,7 +157,7 @@ function dataRecieved(tickets)
         {
             // create an edit button
             var editButton = document.createElement('button')
-            editButton.classList.add('editButton')
+            editButton.classList.add('editButton', 'noCollapse')
             editButton.onclick = editButtonPressed
             editButton.appendChild(document.createTextNode('edit'))
             div.append(editButton)
@@ -169,7 +175,7 @@ function dataRecieved(tickets)
 
         //create the textarea element for the resolution field
         var newNarrativeField = document.createElement('textarea')
-        newNarrativeField.classList.add('form-control')
+        newNarrativeField.classList.add('form-control', 'noCollapse')
         newNarrativeField.rows='5'
         newNarrativeDiv.append(newNarrativeField)
 
@@ -186,9 +192,16 @@ function dataRecieved(tickets)
 
         //create the textarea element for the resolution field
         var ticketResolutionField = document.createElement('textarea')
-        ticketResolutionField.classList.add('form-control')
+        ticketResolutionField.classList.add('form-control', 'noCollapse')
         ticketResolutionField.rows='5'
         ticketResolutionDiv.append(ticketResolutionField)
+
+        var saveChangesButton = document.createElement('button')
+        saveChangesButton.classList.add('saveChangesButton', 'noCollapse')
+        saveChangesButton.onclick = saveEditPressed
+        saveChangesButton.appendChild(document.createTextNode('Save Changes'))
+        saveChangesButton.style.display='none'
+        div.append(saveChangesButton)
     }
 }
 
@@ -197,7 +210,7 @@ function dataRecieved(tickets)
 function toggleDetails(event)
 {
     // do nothing if the selected element is the button (because we want to be able to press that without collapsing the ticket details)
-    if(event.target.classList.contains('editButton')||event.target.classList.contains('statusSelect'))
+    if(event.target.classList.contains('editButton')||event.target.classList.contains('statusSelect')||event.target.classList.contains('noCollapse'))
     {
         return null 
     }
@@ -252,58 +265,55 @@ function toggleDetails(event)
         return null
     }
 
-    //show the statusSelect, add narrative, and ticket resolution fields
-    ticket.children[1].children[1].style.display='block'
-    ticket.children[2].children[4].style.display='block'
-    ticket.children[2].children[5].style.display='block'
+    // grey out the fields that can't be edited
+    ticket.style.color='lightgrey'
     
-    // get the editable elements
-    var description = ticket.children[0]
-    var priorityField = ticket.children[2].children[2]
-    var narrativeText = ticket.children[2].children[3].children[0].children[0]
+    // get the editable elements, and make them visable, and not grey
+    var status = ticket.children[1].children[1]
+    var narrative = ticket.children[2].children[4]
+    var ticketResolution = ticket.children[2].children[5]
+    status.style.color='black'
+    status.style.display='block'
+    narrative.style.display='block'
+    narrative.style.color='black'
+    ticketResolution.style.display='block'
+    ticketResolution.style.color='black'
 
-    // make the fields editable, one at a time, and focus on the one that is currently editable
-    description.setAttribute('contenteditable', true)
-    description.focus()
-    description.style.background = 'lightgrey'
-    description.addEventListener('blur', function(event)
+    // make the edit button visable
+    var editButton = ticket.children[2].children[6]
+    editButton.style.display='block'
+  }
+
+  function saveEditPressed(event)
+  {
+    // get the editable elements
+    var ticket = event.target.closest('li')
+    var status = ticket.children[1].children[1]
+    var narrative = ticket.children[2].children[4].children[1]
+    var ticketResolution = ticket.children[2].children[5].children[1]
+
+    // check that the narrative field is not null
+    if(narrative.value === "")
     {
-        description.setAttribute('contenteditable', false)
-        description.style.background = 'none'
-        priorityField.setAttribute('contenteditable', true)
-        priorityField.focus()
-        priorityField.style.background = 'lightgrey'
-    })
-    priorityField.addEventListener('blur', function(event)
+        window.alert('All edits must include an entry in the narrative')
+        return null
+    }
+    // if the status was set to 'Closed'
+    if(status.value==='Closed')
     {
-        priorityField.setAttribute('contenteditable', false)
-        priorityField.style.background='none'
-        narrativeText.setAttribute('contentEditable', true)
-        narrativeText.focus()
-        narrativeText.style.background='lightgrey'
-    })
-    narrativeText.addEventListener('blur', function(event)
-    {
-        narrativeText.setAttribute('contenteditable', false)
-        narrativeText.style.background='none'
-        //prompt the user to cconfirm changes, and push the changes to the server side if confirmed
-        if(confirm('do you want to save these changes?'))
+        if(ticketResolution.textContent === "")
         {
-            //makes a POST request to dashboard/editTicket that sends a json of the edited entry
-            var postRequest = new XMLHttpRequest()
-            postRequest.open('POST', '/dashboard/editTicket', true)
-            postRequest.send({
-                description: '1',
-                priority: 1,
-                narrative: '1',
-                open: true
-            })
-            //hide the desired elements
-            ticket.children[1].children[1].style.display='none'
-            ticket.children[2].children[3].style.display='none'
-            ticket.children[2].children[4].style.display='none'
-            console.log('oof')
-            location.reload()
+            window.alert('Please enter a ticket resolution to close the ticket')
+            return null
         }
-    })
+        else
+        {
+            console.log('info sent, ticket closed')
+        }
+    }
+    else
+    {
+        console.log('info sent')
+    }
+    location.reload()
   }
