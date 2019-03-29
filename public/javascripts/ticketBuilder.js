@@ -210,7 +210,6 @@ function dataRecieved(tickets)
         var id = document.createElement('input')
         id.setAttribute('type', 'hidden');
         id.setAttribute('value',ticket._id);
-        console.log(ticket._id)
         li.append(id);
 
         //create ticket resolution, only visable if the ticket is closed
@@ -233,17 +232,14 @@ function dataRecieved(tickets)
 
 function unloadTickets()
 {
-    while(ticketsEle.firstChild)
+    while(ticketsEle.item(0).firstChild)
     {
-        ticketsEle.removeChild(ticketsEle.firstChild)
+        ticketsEle.item(0).removeChild(ticketsEle.item(0).firstChild)
     }
 }
 
 // load in the tickets when page loads
 loadTickets()
-
-
-unloadTickets()
 
 // a function that toggles the visability of the ticket details
 function toggleDetails(event)
@@ -341,7 +337,7 @@ function toggleDetails(event)
     // if the status was set to 'Closed'
     if(status.value==='Closed')
     {
-        if(ticketResolution.textContent === "")
+        if(ticketResolution.value === "")
         {
             window.alert('Please enter a ticket resolution to close the ticket')
             return null
@@ -368,5 +364,6 @@ function toggleDetails(event)
     ticket.children[2].children[6].style.display='none'
 
     //reaload the tickets
+    unloadTickets()
     loadTickets()
   }
