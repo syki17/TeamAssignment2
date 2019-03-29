@@ -54,9 +54,6 @@ app.use(session({
     cookie: {secure: false}
 }))
 
-//app.use((req,res,next)=>{
-//    res.locals.loggedIn = req.isAuthenticated();
-//})
 
 app.use(passport.initialize());
 app.use(passport.session());
