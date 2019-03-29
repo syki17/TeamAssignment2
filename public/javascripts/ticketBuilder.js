@@ -45,6 +45,7 @@ function dataRecieved(tickets)
          *              label ticket resolution:
          *              textarea.form-control rows=5
          *          button save changes
+         *      input id (hidden)
          *          
          */         
 
@@ -187,7 +188,7 @@ function dataRecieved(tickets)
 
         //create the label element for the resolution
         var ticketResolutionLabel = document.createElement('label')
-        ticketResolutionLabel.appendChild(document.createTextNode('Ticket Resolution'))
+        ticketResolutionLabel.appendChild(document.createTextNode('Enter A Ticket Resolution:'))
         ticketResolutionDiv.append(ticketResolutionLabel)
 
         //create the textarea element for the resolution field
@@ -202,6 +203,27 @@ function dataRecieved(tickets)
         saveChangesButton.appendChild(document.createTextNode('Save Changes'))
         saveChangesButton.style.display='none'
         div.append(saveChangesButton)
+
+        //creates a hidden value for id, so we can use it for editing
+        var id = document.createElement('input')
+        id.setAttribute('type', 'hidden');
+        id.setAttribute('value',ticket._id);
+        li.append(id);
+
+        //create ticket resolution, only visable if the ticket is closed
+        var resolvedTicket = document.createElement('p')
+        resolvedTicket.appendChild(document.createTextNode('Ticket Resolution:'))
+        resolvedTicket.style.display='none'
+        div.append(resolvedTicket)
+        
+        var resolvedTicketText = document.createElement('p')
+        resolvedTicketText.appendChild(document.createTextNode(ticket.ticketResolution))
+        resolvedTicket.append(resolvedTicketText)
+
+        if(ticket.status==='Closed')
+        {
+            resolvedTicket.style.display='none'
+        }
     }
 }
 
@@ -291,6 +313,7 @@ function toggleDetails(event)
     var status = ticket.children[1].children[1]
     var narrative = ticket.children[2].children[4].children[1]
     var ticketResolution = ticket.children[2].children[5].children[1]
+    var ticketId = ticket.children[3]
 
     // check that the narrative field is not null
     if(narrative.value === "")
@@ -308,6 +331,7 @@ function toggleDetails(event)
         }
         else
         {
+            
             console.log('info sent, ticket closed')
         }
     }
@@ -315,5 +339,23 @@ function toggleDetails(event)
     {
         console.log('info sent')
     }
-    location.reload()
+    //makes a POST request to dashboard/editTicket that sends a json of the edited entry
+    var postRequest = new XMLHttpRequest()
+    var data = {
+            _id: ticketId,
+            status: status.value,
+            narrative: narrative.value,
+            ticketResolution: ticketResolution.value
+    }
+    var json = JSON.stringify(data);
+    postRequest.open('POST', '/dashboard/editTicket')
+    postRequest.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    postRequest.send(json)
+
+    //put the look of the page back to normal
+    ticket.style.color='black'
+    status.style.display='none'
+    narrative.parentElement.style.display='none'
+    ticketResolution.parentElement.style.display='none'
+    ticket.children[2].children[6].style.display='none'
   }

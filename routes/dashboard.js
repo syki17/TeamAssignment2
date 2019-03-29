@@ -14,9 +14,11 @@ tickets = {tickets:
         'second narrative', 
         'third narrative'
       ],
+      ticketResolution: null,
       cxName: 'Bob',
       status: 'Open',
-      open: true
+      open: true,
+      _id: 1
     }, 
     {
       description: 'sample ticket from json 2',
@@ -28,9 +30,11 @@ tickets = {tickets:
         'second narrative', 
         'third narrative'
       ],
+      ticketResolution: null,
       cxName: 'Fred',
       status: 'Open',
-      open: true
+      open: true,
+      _id: 2
     }, 
     {
       description: 'sample closed ticket',
@@ -42,9 +46,11 @@ tickets = {tickets:
         'second narrative', 
         'third narrative'
       ],
+      ticketResolution: 'closed',
       cxName: 'Joe',
       status: 'Closed',
-      open: false
+      open: false,
+      _id: 3
     }
   ]
 }
