@@ -1,7 +1,7 @@
 ![Alt text](public/images/logo.png?raw=true "Logo")
 
 # IncidentMangementWebAppDoccumentation
-By Nicholas Gardner and Jakub 
+By Nicholas Gardner and Jakub Sykora
 
 This application is designed to allow users to manage support tickets.
 
