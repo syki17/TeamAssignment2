@@ -1,0 +1,28 @@
+extends layout
+
+block content
+  h1= title
+  p Welcome to #{title}
+
+  .container
+    header tickets
+    ul.list-group.tickets
+    button.toggleClosedButton(onclick='toggleClosed()') show closed tickets?
+
+  .container
+    header Open New Ticket
+    form(action="/dashboard/addTicket" id="new-ticket-form" method="post" role="form")
+            .form-group
+                label(for="description") Incident Description
+                input.form-control(id="descriptionField" name="description" type="text" rows="5" required="required")
+            .form-group
+                label(for="cxName") Customer Name
+                input.form-control(id="cxNameField" name="cxName" type="text" required="required")
+            .form-group
+                label(for="priority") Incident Priority
+                input.form-control(id="priorityField" name="priority" type="number" required="required")
+            .form-group
+                label(for="narrative") Incident Narrative
+                textarea.form-control(id="narrativeField" name="narrative" rows="5" required="required")
+
+            button.btn.border(type="submit") Submit
