@@ -8,7 +8,16 @@ Description: controller for the dashboard page
 var express = require('express');
 var router = express.Router();
 var Ticket = require('../models/ticket');
-var ObjectID = require('mongodb').ObjectID;
+
+function isAuthenticated(req,res,next){
+    if(req.isAuthenticated()){
+        return next();
+    }
+    console.log('Not Authenticated')
+    res.redirect('/login');
+}
+
+router.use(isAuthenticated)
 
 /* GET dashboard. */
 router.get('/', function(req, res, next) {
