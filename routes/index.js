@@ -13,7 +13,8 @@ var passport = require('passport');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Home Page' });
+  res.render('index', { title: 'Ticketing System',
+  text: 'Comp 2106 Assignment 2 - Ticketing System by: Nic and Jakub'});
 });
 
 /**
