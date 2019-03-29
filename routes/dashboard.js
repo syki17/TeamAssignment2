@@ -1,7 +1,15 @@
+/*
+File Name: dashboard.js
+Author: Jakub Sykora Nicholas Gardner
+Website: https://ticketsystem2106.herokuapp.com/
+Description: controller for the dashboard page
+*/
+
 var express = require('express');
 var router = express.Router();
 var Ticket = require('../models/ticket');
 var ObjectID = require('mongodb').ObjectID;
+
 /* GET dashboard. */
 router.get('/', function(req, res, next) {
   res.render('dashboard', { title: 'Dashboard' });
@@ -19,9 +27,9 @@ router.get('/tickets', function(req, res, next)
 
 
 
-// TODO
-// POST 
-// alter a ticket
+/**
+ * accepts json, gets a ticket by id, then edits it according to that json
+ */
 router.post('/editTicket', function(req, res, next)
 {
     //find ticket by Id - if found update
@@ -31,7 +39,7 @@ router.post('/editTicket', function(req, res, next)
             ticket.narrative.push(req.body.narrative)
             ticket.ticketResolution = req.body.ticketResolution
             ticket.timestamp = (+ new Date()/1000).toFixed(0)
-            ticket.save();
+            ticket.save(); 
         }
         else{
             console.log(err)
@@ -41,14 +49,14 @@ router.post('/editTicket', function(req, res, next)
   res.redirect('/dashboard')
 });
 
-// TODO
-// POST
-// create a new ticket
+/**
+ * adds a new entry into the database
+ */
 router.post('/addTicket', function(req, res, next)
 {
     const newTicket = new Ticket({
         'description': req.body.description,
-        'recordNumber': req.body.recordNumber,
+        'recordNumber': (+ new Date()/1000).toFixed(0),
         'priority': Number(req.body.priority),
         'narrative': req.body.narrative,
         'ticketResolution': null,

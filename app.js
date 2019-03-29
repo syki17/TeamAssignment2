@@ -1,3 +1,11 @@
+/*
+File Name: app.js
+Author: Jakub Sykora Nicholas Gardner
+Website: https://ticketsystem2106.herokuapp.com/
+Description: page that sets up the server
+*/
+
+
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
