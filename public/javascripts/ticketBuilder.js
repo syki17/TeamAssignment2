@@ -1,11 +1,17 @@
-
+/*
+File Name: ticketBuilder.js
+Author: Jakub Sykora Nicholas Gardner
+Website: https://ticketsystem2106.herokuapp.com/
+Description: dynamically builds the list of tickets, and adds all client-side functionality (such as toggling visability)
+*/
 
 //grabs the tickets elemenet
 var ticketsEle = document.getElementsByClassName("tickets")
 var toggleClosedButton = document.getElementsByClassName('toggleClosedButton')
 
 
-//get data from the server
+// a function for loading the tickets onto the page
+// makes a get request to the server side, loops through the results, and dynamically builds a complicated html structure out of it
 function loadTickets()
 {
     const requestURL = 'dashboard/tickets';
@@ -20,38 +26,6 @@ function dataRecieved(tickets)
     //loop through the json and build the tickets
     for (let ticket of tickets)
     {
-        /**
-         * Goal is to create an html structure roughly like this (excuse the messy psudeaucode): 
-         * 
-         * ul.list-group.tickets
-         *  li.ticket.list-group-item.list-group-item-action onclick=toggleDetails()
-         *      p.description #{ticket.description}
-         *          p record number: 
-         *              p #{ticket.recordNumber}
-         *      p ticket status:
-         *          p #{ticket.status}
-         *          select.statusSelect display=none
-         *              (the options)
-         *      div.ticketDetails display=none
-         *          p.priority priority:
-         *              p.priorityField #{ticket.priorityField}
-         *          p customer name:
-         *              p #{ticket.cxName}
-         *          ul.narratives.list-group narrative:
-         *              li.list-group-item #{ticket.narrative}
-         *          button edit
-         *          div.form-group display=none
-         *              label Enter New Narrative:
-         *              textarea.form-control rows=5
-         *          div.form-group display=none
-         *              label ticket resolution:
-         *              textarea.form-control rows=5
-         *          button save changes
-         *      input id (hidden)
-         *          
-         */         
-
-
         //create the li element (the entire ticket will be encased in this)
         var li = document.createElement('li')
         li.classList.add('ticket', 'list-group-item', 'list-group-item-action')
@@ -230,6 +204,9 @@ function dataRecieved(tickets)
 }
 }
 
+// a function for removing the tickets from the page
+// an attempt at reloading the data after changes without having to actually reload the webpage
+// loops through all tickets, and removes them
 function unloadTickets()
 {
     while(ticketsEle.item(0).firstChild)
@@ -288,7 +265,8 @@ function toggleDetails(event)
     }
   }
 
-  // a function that allows the given element to be edited, then prompts the user to confirm changes before calling the 'dashboard/editTicket' POST method
+  // a function that enters a ticket into an 'edit mode'
+  // greys out all non-editable info, makes fields visable for data entry
   function editButtonPressed(event)
   {
     // get the li element for the selected ticket (the element storing the entire ticket, who's text content is the description)
@@ -319,6 +297,7 @@ function toggleDetails(event)
     editButton.style.display='block'
   }
 
+  // a function for saving changes made to a ticket
   function saveEditPressed(event)
   {
     // get the editable elements
@@ -343,12 +322,14 @@ function toggleDetails(event)
             return null
         }
     }
+    var today = new Date();
+    var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
     //makes a POST request to dashboard/editTicket that sends a json of the edited entry
     var postRequest = new XMLHttpRequest()
     var data = {
             _id: ticketId.value,
             status: status.value,
-            narrative: narrative.value,
+            narrative: narrative.value+" "+time,
             ticketResolution: ticketResolution.value
     }
     var json = JSON.stringify(data);
